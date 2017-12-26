@@ -1,0 +1,31 @@
+{
+  "name": "@tradle/models-pack",
+  "version": "1.0.0",
+  "description": "tiny utility to build a Tradle models pack",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test",
+    "lint": "eslint --quiet .",
+    "precommit": "npm run lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@tradle/build-resource": "^2.13.1",
+    "@tradle/validate-model": "^4.2.0",
+    "@tradle/validate-resource": "^2.14.0",
+    "json-stable-stringify": "^1.0.1"
+  },
+  "devDependencies": {
+    "@tradle/engine": "*",
+    "@tradle/models": "*",
+    "eslint": "^4.14.0",
+    "husky": "^0.14.3",
+    "tape": "^4.8.0"
+  },
+  "peerDependencies": {
+    "@tradle/engine": "*",
+    "@tradle/models": "*"
+  }
+}
