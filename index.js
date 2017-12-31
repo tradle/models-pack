@@ -20,7 +20,8 @@ const toModelsPack = (models) => {
     model: modelsPackModel,
     resource: {
       models,
-      versionId
+      versionId,
+      namespace: getNamespace(models[0])
     }
   })
   .toJSON()
@@ -87,7 +88,7 @@ const getNamespace = obj => {
 
   const id = obj[TYPE]
   if (id !== modelsPackModel.id) {
-    return getNamespace(id)
+    return id ? getNamespace(id) : getNamespace(obj.id)
   }
 
   return getNamespace(obj.models[0].id)

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node test",
     "lint": "eslint --quiet .",
-    "precommit": "npm run lint"
+    "precommit": "npm run lint && npm run test"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +19,8 @@
   },
   "devDependencies": {
     "@tradle/engine": "*",
-    "@tradle/models": "*",
+    "@tradle/models": "github:tradle/models",
+    "@tradle/validate-resource": "^2.14.0",
     "eslint": "^4.14.0",
     "husky": "^0.14.3",
     "tape": "^4.8.0"
