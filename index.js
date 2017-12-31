@@ -1,8 +1,16 @@
 const crypto = require('crypto')
 const stableStringify = require('json-stable-stringify')
+const { TYPE } = require('@tradle/constants')
 const baseModels = require('@tradle/models').models
 const buildResource = require('@tradle/build-resource')
+const validateResource = require('@tradle/validate-resource')
 const modelsPackModel = baseModels['tradle.ModelsPack']
+const RESERVED_NAMESPACES = [
+  'tradle',
+  'tradle.io'
+]
+
+const isReservedNamespace = namespace => RESERVED_NAMESPACES.includes(namespace)
 
 const toModelsPack = (models) => {
   models = toSortedArray(models)
@@ -20,9 +28,7 @@ const toModelsPack = (models) => {
 
 const toSortedArray = (models) => {
   if (Array.isArray(models)) {
-    return models
-      .sort(compareAlphabetical)
-      .map(id => models[id])
+    return models.sort(compareAlphabetical)
   }
 
   return Object.keys(models)
@@ -49,5 +55,57 @@ const sha256 = (obj) => {
     .slice(0, 8)
 }
 
+const validateModelsPack = pack => {
+  validateResource({
+    models: baseModels,
+    resource: pack
+  })
+
+  const { models } = pack
+  let namespace
+  for (const model of models) {
+    const mNamespace = getNamespace(model.id)
+    if (isReservedNamespace(mNamespace)) {
+      throw new Error(`namespace ${mNamespace} is reserved`)
+    }
+
+    if (!namespace) {
+      namespace = mNamespace
+    }
+
+    assert(
+      mNamespace === namespace,
+      'expected namespace to be the same for all models in the pack'
+    )
+  }
+}
+
+const getNamespace = obj => {
+  if (typeof obj === 'string') {
+    return obj.slice(0, obj.lastIndexOf('.'))
+  }
+
+  const id = obj[TYPE]
+  if (id !== modelsPackModel.id) {
+    return getNamespace(id)
+  }
+
+  return getNamespace(obj.models[0].id)
+}
+
+const getDomain = obj => {
+  return getNamespace(obj)
+    .split('.')
+    .reverse()
+    .join('.')
+}
+
+const assert = (statement, message) => {
+  if (!statement) throw new Error(message || 'assertion failed')
+}
+
 exports.versionId = getModelsVersionId
 exports.pack = toModelsPack
+exports.validate = validateModelsPack
+exports.getDomain = getDomain
+exports.getNamespace = getNamespace

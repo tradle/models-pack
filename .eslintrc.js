@@ -11,13 +11,7 @@ module.exports = {
         "array-bracket-spacing": "error",
         "array-callback-return": "error",
         "arrow-body-style": "off",
-        "arrow-parens": [
-            "error",
-            "as-needed",
-            {
-                "requireForBlockBody": true
-            }
-        ],
+        "arrow-parens": "off",
         "arrow-spacing": [
             "error",
             {
@@ -75,7 +69,7 @@ module.exports = {
         "id-length": "off",
         "id-match": "error",
         "indent": "off",
-        "init-declarations": "error",
+        "init-declarations": "off",
         "jsx-quotes": "error",
         "key-spacing": "error",
         "keyword-spacing": [
@@ -197,8 +191,8 @@ module.exports = {
         "no-warning-comments": "error",
         "no-whitespace-before-property": "error",
         "no-with": "error",
-        "object-curly-newline": "error",
-        "object-curly-spacing": "error",
+        "object-curly-newline": "off",
+        "object-curly-spacing": "off",
         "object-property-newline": "error",
         "object-shorthand": "error",
         "one-var": "off",
