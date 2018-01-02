@@ -6,11 +6,12 @@ const buildResource = require('@tradle/build-resource')
 const validateResource = require('@tradle/validate-resource')
 const modelsPackModel = baseModels['tradle.ModelsPack']
 const RESERVED_NAMESPACES = [
-  'tradle',
-  'tradle.io'
+  'tradle.'
 ]
 
-const isReservedNamespace = namespace => RESERVED_NAMESPACES.includes(namespace)
+const isReservedNamespace = namespace => {
+  return RESERVED_NAMESPACES.some(reserved => namespace.startsWith(reserved))
+}
 
 const toModelsPack = (models) => {
   models = toSortedArray(models)
@@ -110,3 +111,4 @@ exports.pack = toModelsPack
 exports.validate = validateModelsPack
 exports.getDomain = getDomain
 exports.getNamespace = getNamespace
+exports.isReservedNamespace = isReservedNamespace
