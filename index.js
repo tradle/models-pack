@@ -13,19 +13,21 @@ const isReservedNamespace = namespace => {
   return RESERVED_NAMESPACES.some(reserved => namespace.startsWith(reserved))
 }
 
-const toModelsPack = (models) => {
+const toModelsPack = ({ models, namespace }) => {
   models = toSortedArray(models)
   const versionId = sha256(models)
-  return buildResource({
+  const builder = buildResource({
     models: baseModels,
     model: modelsPackModel,
     resource: {
       models,
-      versionId,
-      namespace: getNamespace(models[0])
+      versionId
     }
   })
-  .toJSON()
+
+  if (namespace) builder.set({ namespace })
+
+  return builder.toJSON()
 }
 
 const toSortedArray = (models) => {
@@ -47,7 +49,7 @@ const compareAlphabetical = (a, b) => {
 }
 
 const getModelsVersionId = (models) => {
-  return toModelsPack(models).versionId
+  return toModelsPack({ models }).versionId
 }
 
 const sha256 = (obj) => {
@@ -63,22 +65,19 @@ const validateModelsPack = pack => {
     resource: pack
   })
 
-  const { models } = pack
-  let namespace
+  const { models, namespace } = pack
   for (const model of models) {
     const mNamespace = getNamespace(model.id)
     if (isReservedNamespace(mNamespace)) {
       throw new Error(`namespace ${mNamespace} is reserved`)
     }
 
-    if (!namespace) {
-      namespace = mNamespace
+    if (namespace) {
+      assert(
+        mNamespace === namespace,
+        `expected all models to have namespace ${namespace}`
+      )
     }
-
-    assert(
-      mNamespace === namespace,
-      'expected namespace to be the same for all models in the pack'
-    )
   }
 }
 
@@ -88,11 +87,11 @@ const getNamespace = obj => {
   }
 
   const id = obj[TYPE]
-  if (id !== modelsPackModel.id) {
-    return id ? getNamespace(id) : getNamespace(obj.id)
+  if (id === modelsPackModel.id) {
+    return obj.namespace || getNamespace(obj.models[0].id)
   }
 
-  return getNamespace(obj.models[0].id)
+  return id ? getNamespace(id) : getNamespace(obj.id)
 }
 
 const getDomain = obj => {
