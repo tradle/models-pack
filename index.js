@@ -2,10 +2,11 @@ const crypto = require('crypto')
 const stableStringify = require('json-stable-stringify')
 const { TYPE } = require('@tradle/constants')
 const baseModels = require('@tradle/models').models
-const buildResource = require('@tradle/build-resource')
+const Lens = require('@tradle/lens')
 const validateResource = require('@tradle/validate-resource')
 const modelsPackModel = baseModels['tradle.ModelsPack']
 const RESERVED_NAMESPACES = [
+  'tradle',
   'tradle.'
 ]
 
@@ -13,21 +14,17 @@ const isReservedNamespace = namespace => {
   return RESERVED_NAMESPACES.some(reserved => namespace.startsWith(reserved))
 }
 
-const toModelsPack = ({ models, namespace }) => {
-  models = toSortedArray(models)
-  const versionId = sha256(models)
-  const builder = buildResource({
-    models: baseModels,
-    model: modelsPackModel,
-    resource: {
-      models,
-      versionId
-    }
-  })
+const toModelsPack = ({ models, lenses, namespace }) => {
+  const pack = {
+    [TYPE]: modelsPackModel.id
+  }
 
-  if (namespace) builder.set({ namespace })
+  if (models) pack.models = toSortedArray(models)
+  if (lenses) pack.lenses = toSortedArray(lenses)
+  if (namespace) pack.namespace = namespace
 
-  return builder.toJSON()
+  pack.versionId = sha256(pack)
+  return pack
 }
 
 const toSortedArray = (models) => {
@@ -48,36 +45,58 @@ const compareAlphabetical = (a, b) => {
   return 0
 }
 
-const getModelsVersionId = (models) => {
-  return toModelsPack({ models }).versionId
+const getModelsVersionId = ({ models, lenses }) => {
+  return toModelsPack({ models, lenses }).versionId
 }
 
-const sha256 = (obj) => {
+const sha256 = obj => {
   return crypto.createHash('sha256')
     .update(stableStringify(obj))
     .digest('hex')
     .slice(0, 8)
 }
 
-const validateModelsPack = pack => {
+const validateModelsPack = ({
+  builtInModels=baseModels,
+  modelsPack
+}) => {
   validateResource({
-    models: baseModels,
-    resource: pack
+    models: builtInModels,
+    resource: modelsPack
   })
 
-  const { models, namespace } = pack
+  const { models=[], lenses=[], namespace } = modelsPack
   for (const model of models) {
     const mNamespace = getNamespace(model.id)
-    if (isReservedNamespace(mNamespace)) {
-      throw new Error(`namespace ${mNamespace} is reserved`)
-    }
+    validateNamespace({
+      expected: namespace,
+      actual: mNamespace
+    })
+  }
 
-    if (namespace) {
-      assert(
-        mNamespace === namespace,
-        `expected all models to have namespace ${namespace}`
-      )
-    }
+  for (const lens of lenses) {
+    validateNamespace({
+      expected: namespace,
+      actual: getNamespace(lens.id)
+    })
+
+    Lens.validate({
+      models: builtInModels,
+      lens
+    })
+  }
+}
+
+const validateNamespace = ({ expected, actual }) => {
+  if (actual && isReservedNamespace(actual)) {
+    throw new Error(`namespace ${actual} is reserved`)
+  }
+
+  if (expected) {
+    assert(
+      actual.startsWith(expected),
+      `expected all models to have namespace ${expected}`
+    )
   }
 }
 

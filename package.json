@@ -12,7 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@tradle/build-resource": "^2.13.1",
+    "@tradle/lens": "^1.1.0",
     "@tradle/validate-model": "^4.2.0",
     "@tradle/validate-resource": "^2.14.0",
     "json-stable-stringify": "^1.0.1"

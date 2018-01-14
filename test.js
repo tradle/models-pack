@@ -2,7 +2,7 @@ const test = require('tape')
 const baseModels = require('@tradle/models').models
 const ModelsPack = require('./')
 
-test('basic', (t) => {
+test('basic', t => {
   const pack = ModelsPack.pack({ models: baseModels })
   t.same(pack, ModelsPack.pack({ models: baseModels }))
 
@@ -28,12 +28,23 @@ test('basic', (t) => {
           }
         }
       }
+    ],
+    lenses: [
+      {
+        _t: 'tradle.Lens',
+        id: 'com.example.lens.Application',
+        model: 'tradle.Application'
+      }
     ]
   })
 
   t.equal(ModelsPack.getNamespace(customPack), 'com.example')
   t.equal(ModelsPack.getDomain(customPack), 'example.com')
-  t.doesNotThrow(() => ModelsPack.validate(customPack))
+  t.doesNotThrow(() => ModelsPack.validate({
+    builtInModels: baseModels,
+    modelsPack: customPack
+  }))
+
   customPack.models.push({
     id: 'tradle.reservednamespace.A',
     type: 'tradle.Model',
@@ -41,6 +52,20 @@ test('basic', (t) => {
     properties: {}
   })
 
-  t.throws(() => ModelsPack.validate(customPack), /reserved/i)
+  t.throws(() => ModelsPack.validate({
+    modelsPack: customPack
+  }), /reserved/i)
+
+  customPack.models.pop()
+  customPack.lenses.push({
+    _t: 'tradle.Lens',
+    id: 'tradle.blah',
+    model: 'tradle.Application'
+  })
+
+  t.throws(() => ModelsPack.validate({
+    modelsPack: customPack
+  }), /reserved/i)
+
   t.end()
 })

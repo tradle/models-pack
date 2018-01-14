@@ -91,7 +91,7 @@ module.exports = {
         "max-lines": "error",
         "max-nested-callbacks": "error",
         "max-params": "error",
-        "max-statements": "error",
+        "max-statements": "off",
         "max-statements-per-line": "error",
         "multiline-ternary": "off",
         "new-cap": "error",
@@ -193,7 +193,7 @@ module.exports = {
         "no-with": "error",
         "object-curly-newline": "off",
         "object-curly-spacing": "off",
-        "object-property-newline": "error",
+        "object-property-newline": "off",
         "object-shorthand": "error",
         "one-var": "off",
         "one-var-declaration-per-line": "error",
@@ -229,7 +229,7 @@ module.exports = {
             "error",
             "never"
         ],
-        "space-infix-ops": "error",
+        "space-infix-ops": "off",
         "space-unary-ops": "error",
         "spaced-comment": "error",
         "strict": [
