@@ -45,9 +45,7 @@ const compareAlphabetical = (a, b) => {
   return 0
 }
 
-const getModelsVersionId = ({ models, lenses }) => {
-  return toModelsPack({ models, lenses }).versionId
-}
+const getModelsVersionId = (opts) => toModelsPack(opts).versionId
 
 const sha256 = obj => {
   return crypto.createHash('sha256')
