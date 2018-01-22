@@ -10,6 +10,8 @@ const RESERVED_NAMESPACES = [
   'tradle.'
 ]
 
+const isEmpty = obj => !obj || Object.keys(obj).length === 0
+
 const isReservedNamespace = namespace => {
   return RESERVED_NAMESPACES.some(reserved => namespace.startsWith(reserved))
 }
@@ -19,8 +21,8 @@ const toModelsPack = ({ models, lenses, namespace }) => {
     [TYPE]: modelsPackModel.id
   }
 
-  if (models) pack.models = toSortedArray(models)
-  if (lenses) pack.lenses = toSortedArray(lenses)
+  if (!isEmpty(models)) pack.models = toSortedArray(models)
+  if (!isEmpty(lenses)) pack.lenses = toSortedArray(lenses)
   if (namespace) pack.namespace = namespace
 
   pack.versionId = sha256(pack)
