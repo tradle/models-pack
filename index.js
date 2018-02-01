@@ -44,7 +44,8 @@ const compareAlphabetical = (a, b) => {
   if (b.id) b = b.id
   if (a < b) return -1
   if (a > b) return 1
-  return 0
+
+  throw new Error(`found more than one item with id: ${a}`)
 }
 
 const getModelsVersionId = (opts) => toModelsPack(opts).versionId
