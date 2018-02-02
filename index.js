@@ -103,7 +103,9 @@ const validateNamespace = ({ expected, actual }) => {
 
 const getNamespace = obj => {
   if (typeof obj === 'string') {
-    return obj.slice(0, obj.lastIndexOf('.'))
+    const idx = obj.lastIndexOf('.')
+    if (idx === -1) throw new Error(`invalid namspace: "${obj}"`)
+    return obj.slice(0, idx)
   }
 
   const id = obj[TYPE]
