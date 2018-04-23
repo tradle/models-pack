@@ -13,8 +13,6 @@
   "license": "MIT",
   "dependencies": {
     "@tradle/lens": "^1.1.0",
-    "@tradle/validate-model": "^5.2.0",
-    "@tradle/validate-resource": "^2.14.0",
     "json-stable-stringify": "^1.0.1"
   },
   "devDependencies": {
@@ -25,6 +23,8 @@
     "tape": "^4.8.0"
   },
   "peerDependencies": {
-    "@tradle/models": "*"
+    "@tradle/models": "*",
+    "@tradle/validate-model": "*",
+    "@tradle/validate-resource": "*"
   }
 }
